@@ -1,10 +1,10 @@
-# Data_Structure 
+# Data_Structure <br/>
 
-#All The Code Of Data Structure Are Implemented Using C++
+#All The Code Of Data Structure Are Implemented Using C++ <br/>
 
-Linked List
-  Single Linked List
-  Single Linked List With Method Pass By Reference
+Linked List <br/>
+  Single Linked List <br/>
+  Single Linked List With Method Pass By Reference <br/>
   Double Linked List
   Double Linked List With Method Pass By Reference
   Circular Single Linked List
