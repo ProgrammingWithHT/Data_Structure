@@ -1,62 +1,9 @@
-// #include<iostream>
-// using namespace std ;
-
-// Simple Binary Tree
-
-// struct binaryTree
-// {
-//     int data;
-//     binaryTree *left,*right;
-//     binaryTree(int data):data{data},left{nullptr},right{nullptr}{};
-// };
-
-// void print_dfs(binaryTree *root){
-//     if (root == nullptr){
-//         return;
-//     }
-//     cout << root->data << " ";
-//     print_dfs(root->left);
-//     print_dfs(root->right);
-// }
-
-
-// int main(){
-//     // Nodes construction
-//     binaryTree *root = new binaryTree(1);
-//     binaryTree *left = new binaryTree(2);
-//     binaryTree *right = new binaryTree(3);
-//     binaryTree *left_left = new binaryTree(4);
-//     binaryTree *left_right = new binaryTree(5);
-//     binaryTree *right_left = new binaryTree(6);
-//     binaryTree *right_right = new binaryTree(7);
-
-//     // connecting nodes
-//     root->left = left;
-//     root->right = right;
-//     left->left = left_left;
-//     left->right = left_right;
-//     right->left = right_left;
-//     right->right = right_right;
-
-//     // printing binary tree
-//     print_dfs(root);
-
-//     // Deleting nodes
-//     delete root;
-//     delete left;
-//     delete right;
-//     delete left_left;
-//     delete left_right;
-//     delete right_left;
-//     delete right_right;
-
-//     return 0 ;
-// }
-
 // Binary Search Tree
 
 #include<iostream>
 #include<queue>
+#include<list>
+#include<stack>
 using namespace std ;
 
 
@@ -141,11 +88,94 @@ void levelOrder(bstNode* root){
     while(!q.empty()){  //time o(n); and space o(n);
         bstNode * current = q.front();
         cout << current->data << " ";
+        q.pop();
         if(current->left != NULL) q.push(current->left);
         if(current->right != NULL) q.push(current->right);
-        q.pop();
     }
 }
+
+// Level By Level Binary Tree Printing
+void levelByLevelPrinting(bstNode* root){
+    if(root == NULL) return;
+    queue<bstNode*> q1;
+    queue<bstNode*> q2;
+    q1.push(root);
+    while (!q1.empty() || !q2.empty())
+    {
+        while(!q1.empty()){
+            bstNode* current = q1.front();
+            cout << current->data << " ";
+            q1.pop();
+            if(current->left != NULL) q2.push(current->left);
+            if(current->right != NULL) q2.push(current->right);
+        }
+        cout << endl;
+        while(!q2.empty()){
+            bstNode* current = q2.front();
+            cout << current->data << " ";
+            q2.pop();
+            if(current->left != NULL) q1.push(current->left);
+            if(current->right != NULL) q1.push(current->right);
+        }
+        cout << endl;
+    }
+}
+
+
+
+// Can Be used to check parent have same child element
+bool checkParentHaveSameChild(bstNode* root){
+    if(root==NULL) return true;
+    queue<bstNode*> q1;
+    queue<bstNode*> q2;
+    q1.push(root);
+    bstNode* current = q1.front();
+    if(current->left != NULL) q2.push(current->left);
+    if(current->right != NULL) q2.push(current->right);
+    int a = 2;
+    while(!q1.empty() || !q2.empty())
+    {
+        if(a==2){
+            q1.pop();
+            a=-1;
+        }
+        while (!q1.empty())
+        {
+            bstNode* a1 = q1.front();
+            q1.pop();
+            if(a1->left != NULL) q2.push(a1->left);
+            if(a1->right != NULL) q2.push(a1->right);
+
+            bstNode* a2 = q1.front();
+            q1.pop();
+            if(a2->left != NULL) q2.push(a2->left);
+            if(a2->right != NULL) q2.push(a2->right);
+
+            if(a1->data != a2->data){
+                return false;
+            }
+
+        }
+        while (!q2.empty())
+        {
+            bstNode* a1 = q2.front();
+            q1.pop();
+            if(a1->left != NULL) q1.push(a1->left);
+            if(a1->right != NULL) q1.push(a1->right);
+            
+            bstNode* a2 = q2.front();
+            q1.pop();
+            if(a2->left != NULL) q1.push(a2->left);
+            if(a2->right != NULL) q1.push(a2->right);
+
+            if(a1->data != a2->data){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 
 // display data by Depth-first: method by pre-order
 void preOrder(bstNode *root){
@@ -154,6 +184,20 @@ void preOrder(bstNode *root){
     preOrder(root->left);
     preOrder(root->right);
 }
+
+void preOrderIterative(bstNode* root){
+    if(root==NULL) return;
+    stack<bstNode*> s;
+    s.push(root);
+    while(!s.empty()){
+        bstNode* current = s.top();
+        cout << current->data << " ";
+        s.pop();
+        if(current->right != NULL) s.push(current->right);
+        if(current->left != NULL) s.push(current->left);
+    }
+}
+
 // display data by Depth-first: method by in-order
 void inOrder(bstNode *root){
     if(root == NULL) return;
@@ -161,6 +205,53 @@ void inOrder(bstNode *root){
     cout << root->data << " ";
     inOrder(root->right);
 }
+
+void inOrderIterative(bstNode* root){
+    if(root == NULL) return;
+    stack<bstNode*> s;
+    while (true)
+    {
+        if(root != nullptr){
+            s.push(root);
+            root = root->left;
+        }else {
+            if(s.empty()) break;
+            root = s.top();
+            s.pop();
+            cout << root->data << endl;
+            root = root->right;
+        }
+    }
+}
+
+void postOrderIterative(bstNode* root){
+    if(!root) return;
+    stack<bstNode*> s;
+    bstNode* current = root;
+    while(!s.empty() || current!=nullptr){
+        if(current != nullptr){
+            s.push(current);
+            current = current->left;
+        }else {
+            bstNode* temp = s.top()->right;
+            if(temp == nullptr){
+                temp = s.top();
+                s.pop();
+                cout << temp->data << endl;
+                while (!s.empty() && temp == s.top()->right) //rightChild == node->rightChild
+                {
+                    cout << s.top()->data << endl;
+                    s.pop();
+                }
+                
+            }
+        }
+    }
+
+}
+
+
+
 // display data by Depth-first: method by post-order
 void postOrder(bstNode *root){
     if(root == NULL) return;
@@ -222,6 +313,73 @@ bool isSameTree(bstNode* root1,bstNode* root2){
     return root1->data == root2->data && isSameTree(root1->left,root2->left) && isSameTree(root1->right,root2->right);
 }
 
+// Check Sum To Leaf root
+list<int> list1;
+bool rootToLeafSum(bstNode *root,int sum){ 
+    if(root == NULL) return false;
+
+    if(root->left == NULL && root->right == NULL){
+        if(root->data == sum){
+            list1.push_back(sum);
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    if(rootToLeafSum(root->left,sum-root->data)){
+        list1.push_back(root->data);
+        return true;
+    }
+    if(rootToLeafSum(root->right,sum-root->data)){
+        list1.push_back(root->data);
+        return true;
+    }
+
+    return false; //handle if root to leaf sum not exist
+
+}
+
+// Check given tree is Binary Search Tree or Not
+bool isBstTree(bstNode *root,int min,int max){
+    if(root == NULL) return true;
+    if(root->data <=min || root->data > max) return false;
+    return isBstTree(root->left,min,root->data) && isBstTree(root->right,root->data,max);
+}
+
+// Invert a Binary Tree
+void InvertBinaryTree(bstNode* root){
+    if(!root) return;
+    swap(root->left->data,root->right->data);
+    InvertBinaryTree(root->left);
+    InvertBinaryTree(root->right);
+}
+
+bool checkSymmetric(bstNode* left,bstNode* right){
+    if(left == NULL && right == NULL){
+        return true;
+    }
+    if(left == NULL || right == NULL){
+        return false;
+    }
+    if(left->data != right->data){
+        return false;
+    }
+    bool l = checkSymmetric(left->left,right->right);
+    bool r = checkSymmetric(left->right,right->left);
+    if(l == true && r == true){
+        return true;
+    }else {
+        return false;
+    }
+    // return checkSymmetric(left->left, right->right) && checkSymmetric(left->right,right->left);  //we also write this line instead of above condition
+
+}
+bool isSymmetric(bstNode* root){
+    if(!root) return true;
+    return checkSymmetric(root->left,root->right);
+}
+
 int main(){
     root = insert(root,15);
     root = insert(root,10);
@@ -230,9 +388,23 @@ int main(){
     root = insert(root,8); 
     root = insert(root,12);
 
-    Delete(root,8);
 
-    preOrder(root);
+    // levelOrder(root);
+    levelByLevelPrinting(root);
+
+
+    // preOrder(root);cout << endl;
+    // preOrderIterative(root);
+
+    // cout << rootToLeafSum(root,33);
+    // for (list<int>::iterator it=list1.begin(); it != list1.end(); it++)
+    // {
+    //     cout << *it << " ";
+    // }
+    
+    // Delete(root,8);
+
+    // preOrder(root);
 
     return 0 ;
 }
@@ -293,3 +465,23 @@ int main(){
 
 //     return ptr->data;
 // }
+
+// TOPIC: Binary Search Tree (BST)
+
+// NOTES:
+// 0. In BST, a node at max can have two children (Left, Right)
+// 1. Binary Search Tree is a binary tree data structure which has the following properties.
+//    a. The left subtree of a node 'A' should contain all the nodes with lesser value than 'A'.
+//    b. The right subtree of a node 'A' should contain all the nodes with higher value than 'A'.
+//    c. The left and right subtree also must be a binary search tree.
+
+// 2. It is like having sorted data in tree.
+// 3. In-order to have sorted data in tree, tree should have above three properties.
+
+// BENEFITS:
+// 0. Instead of using sorted array if we use BST then complexity of Insert, Delete becomes log(n).
+// 1. As it maintains sorted elements you have all advantages of data being sorted.
+
+// COMPLEXITY:
+// 1. Search, Insert, Delete Complexity: log2(n)
+// 2. Space Complexity: O(n)
